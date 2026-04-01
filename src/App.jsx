@@ -61,21 +61,24 @@ export default function App() {
       setScreenshots(prev => [...prev, shot]);
       setTimeout(() => setScreenshots(prev => prev.filter(s => s.id !== shotId)), 2600);
 
-      // Take physical cropped snapshot
-      html2canvas(canvasContainerRef.current, { scale: 1, backgroundColor: null }).then(canvas => {
-        const rect = canvasContainerRef.current.getBoundingClientRect();
-        const cropX = pixelRect.left - rect.left;
-        const cropY = pixelRect.top - rect.top;
-
-        const cropCanvas = document.createElement('canvas');
-        cropCanvas.width = shot.w;
-        cropCanvas.height = shot.h;
-        const ctx = cropCanvas.getContext('2d');
-        ctx.drawImage(canvas, cropX, cropY, shot.w, shot.h, 0, 0, shot.w, shot.h);
-        const dataUrl = cropCanvas.toDataURL();
-
-        setScreenshots(prev => prev.map(s => s.id === shotId ? { ...s, imgData: dataUrl } : s));
-      });
+      // Take physical cropped snapshot asynchronously to avoid blocking the Interaction (fixes INP)
+      setTimeout(() => {
+        if (!canvasContainerRef.current) return;
+        html2canvas(canvasContainerRef.current, { scale: 1, backgroundColor: null }).then(canvas => {
+          const rect = canvasContainerRef.current.getBoundingClientRect();
+          const cropX = pixelRect.left - rect.left;
+          const cropY = pixelRect.top - rect.top;
+  
+          const cropCanvas = document.createElement('canvas');
+          cropCanvas.width = shot.w;
+          cropCanvas.height = shot.h;
+          const ctx = cropCanvas.getContext('2d');
+          ctx.drawImage(canvas, cropX, cropY, shot.w, shot.h, 0, 0, shot.w, shot.h);
+          const dataUrl = cropCanvas.toDataURL();
+  
+          setScreenshots(prev => prev.map(s => s.id === shotId ? { ...s, imgData: dataUrl } : s));
+        });
+      }, 50);
     }
 
     // ── AI Console: open and stream logs ─────────────────────────────────────
