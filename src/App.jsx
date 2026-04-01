@@ -3,6 +3,7 @@ import OceanCanvas from './components/OceanCanvas';
 import AIConsole from './components/AIConsole';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Radar } from 'lucide-react';
+import html2canvas from 'html2canvas';
 
 export default function App() {
   const [collected, setCollected] = useState(0);
@@ -57,8 +58,28 @@ export default function App() {
         imgData: null,
       };
 
-      setScreenshots(prev => [...prev, shot]);
-      setTimeout(() => setScreenshots(prev => prev.filter(s => s.id !== shotId)), 2600);
+      // Remove immediate injection so we don't show the grid. 
+
+      // Take physical cropped snapshot asynchronously to avoid blocking the Interaction (fixes INP)
+      setTimeout(() => {
+        if (!canvasContainerRef.current) return;
+        html2canvas(canvasContainerRef.current, { scale: 1, backgroundColor: null }).then(canvas => {
+          const rect = canvasContainerRef.current.getBoundingClientRect();
+          const cropX = pixelRect.left - rect.left;
+          const cropY = pixelRect.top - rect.top;
+  
+          const cropCanvas = document.createElement('canvas');
+          cropCanvas.width = shot.w;
+          cropCanvas.height = shot.h;
+          const ctx = cropCanvas.getContext('2d');
+          ctx.drawImage(canvas, cropX, cropY, shot.w, shot.h, 0, 0, shot.w, shot.h);
+          const dataUrl = cropCanvas.toDataURL();
+  
+          const finalShot = { ...shot, imgData: dataUrl };
+          setScreenshots(prev => [...prev, finalShot]);
+          setTimeout(() => setScreenshots(prev => prev.filter(s => s.id !== shotId)), 2200);
+        });
+      }, 70);
     }
 
     // ── AI Console: open and stream logs ─────────────────────────────────────
@@ -236,8 +257,8 @@ export default function App() {
                 left: s.startLeft, top: s.startTop,
                 width: s.w, height: s.h,
                 opacity: 1, scale: 1, rotate: 0, borderRadius: 0,
-                boxShadow: '0 0 60px rgba(255,255,255,0.95)',
-                border: '4px solid white',
+                boxShadow: '0 0 60px rgba(95, 217, 255, 0.4)',
+                border: '2px solid #5FD9FF',
               }}
               animate={{
                 left: s.endLeft, top: s.endTop,
@@ -245,16 +266,15 @@ export default function App() {
                 opacity: 0, scale: 0.1, rotate: 180, borderRadius: 16,
                 boxShadow: '0 0 0px rgba(255,255,255,0)',
               }}
-              transition={{ duration: 2.2, ease: 'easeInOut' }}
+              transition={{ duration: 1.8, ease: 'easeInOut' }}
               style={{
-                backgroundColor: '#1EB2F2',
-                backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,0.5) 2px, transparent 2px)',
-                backgroundSize: '16px 16px',
+                backgroundColor: '#111',
+                backgroundImage: `url(${s.imgData})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
               }}
-              className="pointer-events-none flex items-center justify-center overflow-hidden"
-            >
-              <div className="w-4 h-4 rounded-full bg-red-500 border-2 border-white animate-pulse shadow-[0_0_10px_red]" />
-            </motion.div>
+              className="pointer-events-none overflow-hidden"
+            />
           ))}
         </AnimatePresence>
       </div>

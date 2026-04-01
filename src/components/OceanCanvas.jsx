@@ -517,34 +517,64 @@ export default function OceanCanvas({ onCollect, onAreaSelected, resetKey }) {
         </g>
         {/* Lighthouse */}
         <g transform="translate(1320, -10)">
-          {/* Tower */}
+          {/* Sweeping Light Beams (Hard Graphic Style) */}
+          <g transform="translate(30, 15)">
+            <g>
+              <animateTransform attributeName="transform" type="rotate" values="-15 0 0; 35 0 0; -15 0 0" dur="6s" repeatCount="indefinite" />
+              <path d="M0,0 L-600,150 L-600,-150 Z" fill="rgba(255,237,101,0.15)" />
+              <path d="M0,0 L-500,40 L-500,-40 Z" fill="rgba(255,237,101,0.25)" />
+              <path d="M0,0 L-200,10 L-200,-10 Z" fill="rgba(255,237,101,0.4)" />
+            </g>
+            <g>
+               <animateTransform attributeName="transform" type="rotate" values="165 0 0; 215 0 0; 165 0 0" dur="6s" repeatCount="indefinite" />
+               <path d="M0,0 L-400,80 L-400,-80 Z" fill="rgba(255,237,101,0.15)" />
+            </g>
+          </g>
+
+          {/* Background rocky base element */}
+          <path d="M0,130 Q30,120 60,130 L60,140 L0,140 Z" fill="#64748b" stroke="#111" strokeWidth="3"/>
+
+          {/* Tower Base */}
           <polygon points="15,130 45,130 35,30 25,30" fill="#f8fafc" stroke="#111" strokeWidth="4" strokeLinejoin="round"/>
-          {/* Door */}
-          <path d="M25 130 L 25 110 C 25 105, 35 105, 35 110 L 35 130 Z" fill="#334155" stroke="#111" strokeWidth="2.5"/>
           
           {/* Wrapper Stripes */}
           <polygon points="16,110 44,110 42,85 18,85" fill="#FF7549" stroke="#111" strokeWidth="2.5" strokeLinejoin="round"/>
           <polygon points="21,55 39,55 37,35 23,35" fill="#FF7549" stroke="#111" strokeWidth="2.5" strokeLinejoin="round"/>
-          
-          {/* Windows */}
-          <rect x="27" y="90" width="6" height="10" rx="0" fill="#fff" stroke="#111" strokeWidth="2"/>
-          <rect x="27" y="42" width="6" height="8" rx="0" fill="#fff" stroke="#111" strokeWidth="2"/>
 
-          {/* Lantern Room Platform & Railing */}
-          <rect x="15" y="27" width="30" height="4" rx="0" fill="#1f2937" stroke="#111" strokeWidth="3"/>
-          <path d="M 12 20 L 48 20 M 15 27 L 15 20 M 25 27 L 25 20 M 35 27 L 35 20 M 45 27 L 45 20" stroke="#111" strokeWidth="2.5"/>
+          {/* 3D Core Shadow (right side) */}
+          <polygon points="30,130 45,130 35,30 30,30" fill="rgba(0,0,0,0.15)"/>
           
-          {/* Lantern Room */}
-          <rect x="22" y="5" width="16" height="20" fill="#FFED65" stroke="#111" strokeWidth="3"/>
-          <line x1="30" y1="5" x2="30" y2="25" stroke="#111" strokeWidth="2.5"/>
+          {/* Highlight line (left side) */}
+          <line x1="20" y1="125" x2="28" y2="35" stroke="#fff" strokeWidth="2" opacity="0.8"/>
+
+          {/* Door */}
+          <path d="M25 130 L 25 110 C 25 105, 35 105, 35 110 L 35 130 Z" fill="#334155" stroke="#111" strokeWidth="2.5"/>
+          <rect x="29" y="112" width="2" height="18" fill="#111"/> 
+          
+          {/* Windows with glowing reflections */}
+          <g>
+            <rect x="27" y="90" width="6" height="10" rx="0" fill="#3b82f6" stroke="#111" strokeWidth="2"/>
+            <line x1="29" y1="92" x2="31" y2="98" stroke="#fff" strokeWidth="1.5" strokeLinecap="round"/>
+            <rect x="27" y="42" width="6" height="8" rx="0" fill="#3b82f6" stroke="#111" strokeWidth="2"/>
+            <line x1="29" y1="44" x2="31" y2="48" stroke="#fff" strokeWidth="1.5" strokeLinecap="round"/>
+          </g>
+
+          {/* Lantern Room Platform & Brutalist Railing */}
+          <rect x="12" y="30" width="36" height="5" rx="0" fill="#1f2937" stroke="#111" strokeWidth="3"/>
+          <polygon points="18,30 42,30 38,27 22,27" fill="#64748b" stroke="#111" strokeWidth="2.5"/>
+          <path d="M 10 20 L 50 20 M 12 30 L 12 20 M 20 30 L 20 20 M 30 30 L 30 20 M 40 30 L 40 20 M 48 30 L 48 20" stroke="#111" strokeWidth="3"/>
+          
+          {/* Lantern Room Glowing Core */}
+          <rect x="22" y="7" width="16" height="20" fill="#FFED65" stroke="#111" strokeWidth="3"/>
+          <circle cx="30" cy="17" r="4" fill="#fff" stroke="#FF7549" strokeWidth="1.5"/>
+          <line x1="27" y1="7" x2="27" y2="27" stroke="#111" strokeWidth="2"/>
+          <line x1="33" y1="7" x2="33" y2="27" stroke="#111" strokeWidth="2"/>
           
           {/* Roof */}
-          <path d="M 17 5 L 30 -10 L 43 5 Z" fill="#FF7549" stroke="#111" strokeWidth="3" strokeLinejoin="round"/>
-          <circle cx="30" cy="-10" r="3" fill="#1eb2f2" stroke="#111" strokeWidth="2"/>
+          <path d="M 17 7 L 30 -8 L 43 7 Z" fill="#FF7549" stroke="#111" strokeWidth="3" strokeLinejoin="round"/>
+          <polygon points="30,-8 43,7 30,7" fill="rgba(0,0,0,0.15)"/>
           
-          <path d="M30,15 L-150,50 L-150,-20 Z" fill="rgba(255,237,101,0.2)">
-            <animate attributeName="opacity" values="0.2;0;0.2" dur="3s" repeatCount="indefinite" />
-          </path>
+          <circle cx="30" cy="-8" r="3" fill="#B9FF68" stroke="#111" strokeWidth="2"/>
         </g>
       </svg>
 
