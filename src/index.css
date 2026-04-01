@@ -1,0 +1,299 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow:wght@400;600;700&display=swap');
+@import "tailwindcss";
+
+/* ─ Design tokens (standard CSS custom properties) ───── */
+:root {
+  --font-comic: "Archivo Black", sans-serif;
+  --font-sans: "Barlow", system-ui, sans-serif;
+
+  --shadow-neo: 4px 4px 0px 0px #111;
+  --shadow-neo-sm: 2px 2px 0px 0px #111;
+  --shadow-neo-lg: 8px 8px 0px 0px #111;
+}
+
+/* ─ Base ─────────────────────────────────────────────── */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: #0f172a;
+    color: #f8fafc;
+    font-family: var(--font-sans);
+    margin: 0;
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><path d='M2,2 L2,24 L8,16 L14,26 L18,24 L13,14 L22,14 Z' fill='%23111' stroke='white' stroke-width='2' stroke-linejoin='round'/></svg>") 2 2, auto;
+  }
+
+  button, a, [role="button"], .cursor-pointer {
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><path d='M2,2 L2,24 L8,16 L14,26 L18,24 L13,14 L22,14 Z' fill='%235FD9FF' stroke='%23111' stroke-width='2.5' stroke-linejoin='round'/></svg>") 2 2, pointer !important;
+  }
+}
+
+/* ─ Utility shortcuts ────────────────────────────────── */
+@layer utilities {
+  .shadow-neo {
+    box-shadow: 4px 4px 0px 0px #111;
+  }
+
+  .shadow-neo-sm {
+    box-shadow: 2px 2px 0px 0px #111;
+  }
+
+  .shadow-neo-lg {
+    box-shadow: 8px 8px 0px 0px #111;
+  }
+
+  .font-comic {
+    font-family: var(--font-comic);
+  }
+}
+
+/* ─ Component classes ────────────────────────────────── */
+@layer components {
+  .btn-neo {
+    font-family: var(--font-comic);
+    text-transform: uppercase;
+    padding: 0.5rem 1.25rem;
+    border: 3px solid #111;
+    box-shadow: 4px 4px 0px 0px #111;
+    letter-spacing: 0.1em;
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-neo:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 7px 7px 0px 0px #111;
+  }
+
+  .btn-neo:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px 0px #111;
+    transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
+  }
+
+  .panel-neo {
+    background: white;
+    color: #111;
+    border: 3px solid #111;
+    box-shadow: 6px 6px 0px 0px #111;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .panel-neo:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0px 0px #111;
+  }
+}
+
+/* ─ FLOAT ──────────────────────────────────────────────*/
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) translateY(-9px) rotate(2deg);
+  }
+}
+
+@keyframes float-slow {
+
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) translateY(-6px) rotate(-2deg);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float-slow 5s ease-in-out infinite;
+}
+
+/* ─ FISH SWIM ───────────────────────────────────────── */
+@keyframes swim-right {
+  from {
+    left: -12%;
+  }
+
+  to {
+    left: 112%;
+  }
+}
+
+@keyframes swim-left {
+  from {
+    left: 112%;
+  }
+
+  to {
+    left: -12%;
+  }
+}
+
+/* ─ POOF ────────────────────────────────────────────── */
+@keyframes poof {
+  0% {
+    transform: translate(-50%, -120%) scale(0.6);
+    opacity: 1;
+  }
+
+  40% {
+    transform: translate(-50%, -160%) scale(1.6);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate(-50%, -220%) scale(0.2);
+    opacity: 0;
+  }
+}
+
+.animate-poof {
+  animation: poof 0.6s ease-out forwards;
+  pointer-events: none;
+}
+
+/* ─ COLLECT RING ─────────────────────────────────────── */
+@keyframes collect-ring {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(2.8);
+    opacity: 0;
+  }
+}
+
+.animate-collect-ring {
+  animation: collect-ring 1s ease-out infinite;
+}
+
+/* ─ BUBBLES ─────────────────────────────────────────── */
+@keyframes bubble-rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.55;
+  }
+
+  100% {
+    transform: translateY(-180px) scale(1.4);
+    opacity: 0;
+  }
+}
+
+.bubble {
+  animation: bubble-rise linear infinite;
+  border-radius: 50%;
+}
+
+/* ─ WAVES ───────────────────────────────────────────── */
+@keyframes wave-slide {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.wave-animate {
+  animation: wave-slide 10s linear infinite;
+}
+
+.wave-animate-slow {
+  animation: wave-slide 17s linear infinite;
+}
+
+.wave-animate-fast {
+  animation: wave-slide 6s linear infinite;
+}
+
+/* ─ JITTER ──────────────────────────────────────────── */
+@keyframes jitter {
+
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+
+  25% {
+    transform: translateX(-50%) rotate(-3deg);
+  }
+
+  75% {
+    transform: translateX(-50%) rotate(3deg);
+  }
+}
+
+.animate-jitter {
+  animation: jitter 0.22s ease-in-out infinite;
+}
+
+/* ─ MARCHING-ANTS drag box ───────────────────────────── */
+.scan-box-dashed {
+  background-image:
+    linear-gradient(90deg, white 50%, transparent 50%),
+    linear-gradient(90deg, white 50%, transparent 50%),
+    linear-gradient(0deg, white 50%, transparent 50%),
+    linear-gradient(0deg, white 50%, transparent 50%);
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  background-size: 18px 3px, 18px 3px, 3px 18px, 3px 18px;
+  background-position: 0 0, 0 100%, 0 0, 100% 0;
+  animation: march 0.7s infinite linear;
+}
+
+@keyframes march {
+  0% {
+    background-position: 0 0, 100px 100%, 0 -100px, 100% 0;
+  }
+
+  100% {
+    background-position: 100px 0, 0 100%, 0 0, 100% 100px;
+  }
+}
+
+/* ─ WAKE ripple behind boat ─────────────────────────── */
+@keyframes wake-out {
+  0% {
+    width: 8px;
+    height: 8px;
+    opacity: 0.8;
+  }
+
+  100% {
+    width: 90px;
+    height: 35px;
+    opacity: 0;
+  }
+}
+
+.animate-wake {
+  animation: wake-out 0.9s ease-out forwards;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ─ CUSTOM CURSOR ──────────────────────────────────── */
+.cursor-crosshair {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' fill='none' stroke='%23111' stroke-width='4'><line x1='14' y1='0' x2='14' y2='28'/><line x1='0' y1='14' x2='28' y2='14'/></svg>") 14 14, crosshair;
+}
