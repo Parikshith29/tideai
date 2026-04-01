@@ -3,7 +3,6 @@ import OceanCanvas from './components/OceanCanvas';
 import AIConsole from './components/AIConsole';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Radar } from 'lucide-react';
-import html2canvas from 'html2canvas';
 
 export default function App() {
   const [collected, setCollected] = useState(0);
@@ -60,25 +59,6 @@ export default function App() {
 
       setScreenshots(prev => [...prev, shot]);
       setTimeout(() => setScreenshots(prev => prev.filter(s => s.id !== shotId)), 2600);
-
-      // Take physical cropped snapshot asynchronously to avoid blocking the Interaction (fixes INP)
-      setTimeout(() => {
-        if (!canvasContainerRef.current) return;
-        html2canvas(canvasContainerRef.current, { scale: 1, backgroundColor: null }).then(canvas => {
-          const rect = canvasContainerRef.current.getBoundingClientRect();
-          const cropX = pixelRect.left - rect.left;
-          const cropY = pixelRect.top - rect.top;
-  
-          const cropCanvas = document.createElement('canvas');
-          cropCanvas.width = shot.w;
-          cropCanvas.height = shot.h;
-          const ctx = cropCanvas.getContext('2d');
-          ctx.drawImage(canvas, cropX, cropY, shot.w, shot.h, 0, 0, shot.w, shot.h);
-          const dataUrl = cropCanvas.toDataURL();
-  
-          setScreenshots(prev => prev.map(s => s.id === shotId ? { ...s, imgData: dataUrl } : s));
-        });
-      }, 50);
     }
 
     // ── AI Console: open and stream logs ─────────────────────────────────────
@@ -267,13 +247,13 @@ export default function App() {
               }}
               transition={{ duration: 2.2, ease: 'easeInOut' }}
               style={{
-                backgroundColor: s.imgData ? 'transparent' : '#1EB2F2',
-                backgroundImage: s.imgData ? `url(${s.imgData})` : 'linear-gradient(rgba(255,255,255,0.5) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,0.5) 2px, transparent 2px)',
-                backgroundSize: s.imgData ? 'cover' : '16px 16px',
+                backgroundColor: '#1EB2F2',
+                backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 2px, transparent 2px), linear-gradient(90deg, rgba(255,255,255,0.5) 2px, transparent 2px)',
+                backgroundSize: '16px 16px',
               }}
               className="pointer-events-none flex items-center justify-center overflow-hidden"
             >
-              {!s.imgData && <div className="w-4 h-4 rounded-full bg-red-500 border-2 border-white animate-pulse shadow-[0_0_10px_red]" />}
+              <div className="w-4 h-4 rounded-full bg-red-500 border-2 border-white animate-pulse shadow-[0_0_10px_red]" />
             </motion.div>
           ))}
         </AnimatePresence>

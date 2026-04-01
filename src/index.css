@@ -88,35 +88,35 @@
 
 /* ─ FLOAT ──────────────────────────────────────────────*/
 @keyframes float {
-
   0%,
   100% {
-    transform: translate(-50%, -50%) translateY(0px) rotate(0deg);
+    transform: translate3d(-50%, -50%, 0) translateY(0px) rotate(0deg);
   }
 
   50% {
-    transform: translate(-50%, -50%) translateY(-9px) rotate(2deg);
+    transform: translate3d(-50%, -50%, 0) translateY(-9px) rotate(2deg);
   }
 }
 
 @keyframes float-slow {
-
   0%,
   100% {
-    transform: translate(-50%, -50%) translateY(0px) rotate(0deg);
+    transform: translate3d(-50%, -50%, 0) translateY(0px) rotate(0deg);
   }
 
   50% {
-    transform: translate(-50%, -50%) translateY(-6px) rotate(-2deg);
+    transform: translate3d(-50%, -50%, 0) translateY(-6px) rotate(-2deg);
   }
 }
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+  will-change: transform;
 }
 
 .animate-float-slow {
   animation: float-slow 5s ease-in-out infinite;
+  will-change: transform;
 }
 
 /* ─ FISH SWIM ───────────────────────────────────────── */
@@ -201,24 +201,27 @@
 /* ─ WAVES ───────────────────────────────────────────── */
 @keyframes wave-slide {
   from {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 
   to {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
 .wave-animate {
   animation: wave-slide 10s linear infinite;
+  will-change: transform;
 }
 
 .wave-animate-slow {
   animation: wave-slide 17s linear infinite;
+  will-change: transform;
 }
 
 .wave-animate-fast {
   animation: wave-slide 6s linear infinite;
+  will-change: transform;
 }
 
 /* ─ JITTER ──────────────────────────────────────────── */
