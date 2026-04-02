@@ -3,12 +3,10 @@ import OceanCanvas from './components/OceanCanvas';
 import AIConsole from './components/AIConsole';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Radar } from 'lucide-react';
-import html2canvas from 'html2canvas';
 
 export default function App() {
   const [collected, setCollected] = useState(0);
   const [areasCleaned, setAreasCleaned] = useState(0);
-  const [screenshots, setScreenshots] = useState([]);
   const [scanFlash, setScanFlash] = useState(false);
   const [resetKey, setResetKey] = useState(0);
 
@@ -46,40 +44,64 @@ export default function App() {
     // Screenshot fly animation to robot badge
     if (robotBadgeRef.current && canvasContainerRef.current) {
       const tgt = robotBadgeRef.current.getBoundingClientRect();
-      const shotId = Date.now();
-      const shot = {
-        id: shotId,
-        startLeft: pixelRect.left,
-        startTop: pixelRect.top,
-        w: Math.max(pixelRect.width || 80, 20),
-        h: Math.max(pixelRect.height || 80, 20),
-        endLeft: tgt.left + tgt.width / 2 - 24,
-        endTop: tgt.top + tgt.height / 2 - 24,
-        imgData: null,
-      };
+      const rect = canvasContainerRef.current.getBoundingClientRect();
+      const sW = Math.max(pixelRect.width || 80, 20);
+      const sH = Math.max(pixelRect.height || 80, 20);
+      const cropX = pixelRect.left - rect.left;
+      const cropY = pixelRect.top - rect.top;
 
-      // Remove immediate injection so we don't show the grid. 
+      // Defer cloning to the next tick to allow the React 'Scan Flash' paint
+      // to resolve instantly. Eliminates the perceived mouse stutter/INP.
+      // DEPLOYING THE NUCLEAR OPTION FOR PERFORMANCE:
+      // We are entirely bypassing React's Virtual DOM and Framer Motion.
+      // We will clone, style, and animate the whole thing instantly using 
+      // Vanilla JavaScript and the native Web Animations API.
+      
+      const clonedNode = canvasContainerRef.current.cloneNode(true);
+      const heavyElements = clonedNode.querySelectorAll('.z-10, .z-20, .z-50, .bubble');
+      for (let i = 0; i < heavyElements.length; i++) heavyElements[i].remove();
+      
+      const styleEl = document.createElement('style');
+      styleEl.innerHTML = '* { animation-play-state: paused !important; transition: none !important; }';
+      clonedNode.appendChild(styleEl);
 
-      // Take physical cropped snapshot asynchronously to avoid blocking the Interaction (fixes INP)
-      setTimeout(() => {
-        if (!canvasContainerRef.current) return;
-        html2canvas(canvasContainerRef.current, { scale: 1, backgroundColor: null }).then(canvas => {
-          const rect = canvasContainerRef.current.getBoundingClientRect();
-          const cropX = pixelRect.left - rect.left;
-          const cropY = pixelRect.top - rect.top;
-  
-          const cropCanvas = document.createElement('canvas');
-          cropCanvas.width = shot.w;
-          cropCanvas.height = shot.h;
-          const ctx = cropCanvas.getContext('2d');
-          ctx.drawImage(canvas, cropX, cropY, shot.w, shot.h, 0, 0, shot.w, shot.h);
-          const dataUrl = cropCanvas.toDataURL();
-  
-          const finalShot = { ...shot, imgData: dataUrl };
-          setScreenshots(prev => [...prev, finalShot]);
-          setTimeout(() => setScreenshots(prev => prev.filter(s => s.id !== shotId)), 2200);
-        });
-      }, 70);
+      const wrapper = document.createElement('div');
+      wrapper.style.position = 'fixed';
+      wrapper.style.zIndex = '9999';
+      wrapper.style.left = `${pixelRect.left}px`;
+      wrapper.style.top = `${pixelRect.top}px`;
+      wrapper.style.width = `${sW}px`;
+      wrapper.style.height = `${sH}px`;
+      wrapper.style.backgroundColor = '#111';
+      wrapper.style.overflow = 'hidden';
+      wrapper.style.boxShadow = '0 0 60px rgba(95, 217, 255, 0.4)';
+      wrapper.style.border = '2px solid #5FD9FF';
+      wrapper.style.pointerEvents = 'none';
+      wrapper.style.transformOrigin = 'center';
+      
+      clonedNode.style.width = `${rect.width}px`;
+      clonedNode.style.height = `${rect.height}px`;
+      clonedNode.style.position = 'absolute';
+      clonedNode.style.left = `-${cropX}px`;
+      clonedNode.style.top = `-${cropY}px`;
+      clonedNode.style.margin = '0';
+      wrapper.appendChild(clonedNode);
+      document.body.appendChild(wrapper);
+
+      // C++ Hardware Composited Animation
+      const moveX = tgt.left + tgt.width / 2 - sW / 2 - pixelRect.left;
+      const moveY = tgt.top + tgt.height / 2 - sH / 2 - pixelRect.top;
+      
+      const anim = wrapper.animate([
+        { transform: 'translate3d(0px, 0px, 0px) scale(1) rotate(0deg)', borderRadius: '0px', opacity: 1, boxShadow: '0 0 60px rgba(95, 217, 255, 0.4)' },
+        { transform: `translate3d(${moveX}px, ${moveY}px, 0px) scale(0.1) rotate(180deg)`, borderRadius: '160px', opacity: 0, boxShadow: '0 0 0px rgba(255, 255, 255, 0)' }
+      ], {
+        duration: 1800,
+        easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+        fill: 'forwards'
+      });
+      
+      anim.onfinish = () => wrapper.remove();
     }
 
     // ── AI Console: open and stream logs ─────────────────────────────────────
@@ -248,35 +270,6 @@ export default function App() {
           )}
         </AnimatePresence>
 
-        {/* Screenshot fly animation */}
-        <AnimatePresence>
-          {screenshots.map(s => (
-            <motion.div key={s.id}
-              initial={{
-                position: 'fixed', zIndex: 150,
-                left: s.startLeft, top: s.startTop,
-                width: s.w, height: s.h,
-                opacity: 1, scale: 1, rotate: 0, borderRadius: 0,
-                boxShadow: '0 0 60px rgba(95, 217, 255, 0.4)',
-                border: '2px solid #5FD9FF',
-              }}
-              animate={{
-                left: s.endLeft, top: s.endTop,
-                width: 48, height: 48,
-                opacity: 0, scale: 0.1, rotate: 180, borderRadius: 16,
-                boxShadow: '0 0 0px rgba(255,255,255,0)',
-              }}
-              transition={{ duration: 1.8, ease: 'easeInOut' }}
-              style={{
-                backgroundColor: '#111',
-                backgroundImage: `url(${s.imgData})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-              className="pointer-events-none overflow-hidden"
-            />
-          ))}
-        </AnimatePresence>
       </div>
     </div>
   );
